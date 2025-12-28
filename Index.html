@@ -3,64 +3,86 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>BioLink Pro - Free Bio Builder</title>
+    <title>BioLink Pro - Ultimate Edition</title>
     <style>
         :root {
             --primary: #4f46e5;
-            --primary-hover: #4338ca;
             --bg: #f3f4f6;
             --card: #ffffff;
             --text: #1f2937;
-            --gray: #9ca3af;
-            --danger: #ef4444;
-            --success: #10b981;
+            --border: #e5e7eb;
         }
-        body { font-family: 'Inter', system-ui, sans-serif; background: var(--bg); color: var(--text); margin: 0; padding: 0; line-height: 1.5; }
+        body { font-family: 'Inter', system-ui, sans-serif; background: var(--bg); color: var(--text); margin: 0; padding: 0; transition: background 0.3s, color 0.3s; }
         
         /* Layout */
         .app-container { max-width: 480px; margin: 0 auto; min-height: 100vh; display: flex; flex-direction: column; background: var(--card); box-shadow: 0 0 20px rgba(0,0,0,0.05); }
         
         /* Navigation */
-        nav { padding: 20px; display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid #e5e7eb; }
-        .logo { font-weight: 800; font-size: 1.2rem; color: var(--primary); text-decoration: none; }
-        .nav-links button { background: none; border: none; cursor: pointer; font-size: 0.9rem; color: var(--primary); font-weight: 500; }
-        .nav-links button.logout { color: var(--danger); }
-
+        nav { padding: 15px 20px; display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid var(--border); position: sticky; top: 0; background: var(--card); z-index: 10; }
+        .logo { font-weight: 900; font-size: 1.2rem; color: var(--primary); text-decoration: none; letter-spacing: -0.5px; }
+        
         /* Sections */
         section { padding: 30px 20px; flex: 1; display: flex; flex-direction: column; }
         .hidden { display: none !important; }
-
-        /* Auth Forms */
-        h1, h2 { margin-top: 0; }
+        
+        /* Forms */
+        h2 { margin-top: 0; margin-bottom: 20px; }
         .form-group { margin-bottom: 15px; }
-        label { display: block; margin-bottom: 5px; font-weight: 500; font-size: 0.9rem; }
-        input { width: 100%; padding: 12px; border: 1px solid #d1d5db; border-radius: 8px; box-sizing: border-box; font-size: 1rem; transition: 0.2s; }
-        input:focus { outline: none; border-color: var(--primary); ring: 2px solid var(--primary); }
+        label { display: block; margin-bottom: 5px; font-weight: 600; font-size: 0.85rem; color: #6b7280; }
+        input, select, textarea { width: 100%; padding: 12px; border: 1px solid var(--border); border-radius: 8px; box-sizing: border-box; font-size: 1rem; transition: 0.2s; background: var(--bg); color: var(--text); }
+        input:focus, textarea:focus { outline: none; border-color: var(--primary); }
         
         .btn { width: 100%; padding: 12px; border: none; border-radius: 8px; font-weight: 600; cursor: pointer; font-size: 1rem; transition: 0.2s; }
         .btn-primary { background: var(--primary); color: white; }
-        .btn-primary:hover { background: var(--primary-hover); }
-        .btn-secondary { background: #e5e7eb; color: var(--text); margin-top: 10px; }
-        .btn-secondary:hover { background: #d1d5db; }
+        .btn-primary:hover { opacity: 0.9; }
+        .btn-outline { background: transparent; border: 1px solid var(--border); margin-top: 10px; }
         
-        /* Toast Messages */
-        #toast { position: fixed; bottom: 20px; left: 50%; transform: translateX(-50%); background: #333; color: #fff; padding: 10px 20px; border-radius: 20px; font-size: 0.9rem; opacity: 0; pointer-events: none; transition: 0.3s; z-index: 100; }
-        #toast.show { opacity: 1; bottom: 40px; }
+        /* Stats Bar */
+        .stats-bar { display: flex; gap: 10px; margin-bottom: 20px; }
+        .stat-box { flex: 1; background: var(--bg); padding: 10px; border-radius: 8px; text-align: center; }
+        .stat-num { font-weight: 800; font-size: 1.2rem; display: block; }
+        .stat-label { font-size: 0.75rem; color: #6b7280; text-transform: uppercase; }
+
+        /* Dashboard Tabs */
+        .dash-tabs { display: flex; gap: 10px; margin-bottom: 20px; border-bottom: 1px solid var(--border); padding-bottom: 10px; }
+        .dash-tab { padding: 5px 10px; cursor: pointer; opacity: 0.5; font-weight: 600; }
+        .dash-tab.active { opacity: 1; border-bottom: 2px solid var(--primary); }
+
+        /* QR Section */
+        .qr-container { text-align: center; padding: 20px; background: var(--bg); border-radius: 12px; margin-bottom: 20px; }
+        .qr-img { width: 150px; height: 150px; mix-blend-mode: multiply; }
 
         /* Profile View */
         .profile-header { text-align: center; margin-bottom: 30px; }
         .avatar { width: 100px; height: 100px; border-radius: 50%; object-fit: cover; border: 4px solid var(--bg); box-shadow: 0 4px 10px rgba(0,0,0,0.1); }
-        .role { color: var(--primary); font-weight: 600; font-size: 0.9rem; text-transform: uppercase; letter-spacing: 1px; }
+        .username-display { font-weight: 700; font-size: 1.5rem; margin: 10px 0 5px; }
+        .verified-badge { color: #3b82f6; margin-left: 5px; }
         
-        .links-container { display: flex; flex-direction: column; gap: 15px; }
-        .link-card { display: flex; align-items: center; justify-content: space-between; padding: 15px; background: #f9fafb; border-radius: 10px; border: 1px solid #e5e7eb; text-decoration: none; color: var(--text); transition: 0.2s; }
-        .link-card:hover { border-color: var(--primary); transform: translateY(-2px); box-shadow: 0 4px 6px rgba(0,0,0,0.05); }
-        .share-box { background: #e0e7ff; padding: 15px; border-radius: 8px; text-align: center; margin-bottom: 20px; border: 1px dashed var(--primary); }
-        .share-url { font-weight: bold; color: var(--primary); word-break: break-all; }
+        .meta-row { display: flex; justify-content: center; align-items: center; gap: 15px; margin-bottom: 20px; }
+        .follow-btn { background: var(--text); color: var(--card); padding: 6px 16px; border-radius: 20px; font-size: 0.9rem; font-weight: 600; border: none; cursor: pointer; }
+        .follow-btn.following { background: transparent; border: 1px solid var(--text); color: var(--text); }
 
-        /* Utility */
-        .auth-switch { text-align: center; margin-top: 20px; font-size: 0.9rem; color: var(--gray); }
-        .auth-switch a { color: var(--primary); text-decoration: none; cursor: pointer; font-weight: 600; }
+        .links-container { display: flex; flex-direction: column; gap: 12px; }
+        .link-card { display: block; padding: 16px; background: var(--bg); border-radius: 10px; text-decoration: none; color: var(--text); font-weight: 500; text-align: center; border: 1px solid transparent; transition: 0.2s; }
+        .link-card:hover { border-color: var(--primary); transform: translateY(-2px); }
+
+        /* Toast */
+        #toast { position: fixed; bottom: 20px; left: 50%; transform: translateX(-50%); background: #1f2937; color: #fff; padding: 12px 24px; border-radius: 30px; font-size: 0.9rem; opacity: 0; pointer-events: none; transition: 0.3s; z-index: 100; }
+        #toast.show { opacity: 1; bottom: 40px; }
+
+        .auth-switch { text-align: center; margin-top: 15px; font-size: 0.9rem; }
+        .auth-switch span { color: var(--primary); cursor: pointer; font-weight: 600; }
+
+        /* --- THEMES --- */
+        /* Dark */
+        body.theme-dark { --bg: #111827; --card: #1f2937; --text: #f9fafb; --border: #374151; }
+        body.theme-dark .qr-img { mix-blend-mode: screen; filter: invert(1); }
+
+        /* Neon */
+        body.theme-neon { --bg: #0f172a; --card: #1e1b4b; --text: #c7d2fe; --border: #4338ca; --primary: #818cf8; }
+        body.theme-neon .link-card { background: linear-gradient(90deg, rgba(79, 70, 229, 0.1), rgba(147, 51, 234, 0.1)); border: 1px solid rgba(129, 140, 248, 0.3); }
+        body.theme-neon .link-card:hover { box-shadow: 0 0 15px rgba(129, 140, 248, 0.5); }
+
     </style>
 </head>
 <body>
@@ -68,113 +90,112 @@
 <div class="app-container">
     <nav>
         <a href="#" class="logo" onclick="goHome()">BioLink</a>
-        <div class="nav-links" id="navAuth" class="hidden">
-            <!-- Dynamic Nav Items -->
-        </div>
+        <button id="navLogout" class="hidden" style="background:none; border:none; cursor:pointer; font-weight:600; color:var(--primary);" onclick="logout()">Logout</button>
     </nav>
 
-    <!-- TOAST NOTIFICATION -->
-    <div id="toast">Message here</div>
+    <div id="toast">Notification</div>
 
-    <!-- LOGIN PAGE -->
+    <!-- LOGIN -->
     <section id="loginPage">
-        <h2>Welcome Back</h2>
-        <p>Sign in to edit your profile.</p>
-        <div class="form-group">
-            <label>Username</label>
-            <input type="text" id="loginUser" placeholder="Enter your username">
-        </div>
-        <button class="btn btn-primary" onclick="login()">Sign In</button>
-        <div class="auth-switch">
-            Don't have an account? <a onclick="showPage('registerPage')">Sign Up</a>
-        </div>
+        <h2>Sign In</h2>
+        <div class="form-group"><label>Username</label><input type="text" id="loginUser"></div>
+        <div class="form-group"><label>Password</label><input type="password" id="loginPass"></div>
+        <button class="btn btn-primary" onclick="login()">Enter</button>
+        <div class="auth-switch">New here? <span onclick="showPage('registerPage')">Create Account</span></div>
     </section>
 
-    <!-- REGISTER PAGE -->
+    <!-- REGISTER -->
     <section id="registerPage" class="hidden">
-        <h2>Create Account</h2>
-        <p>Choose a unique username.</p>
-        <div class="form-group">
-            <label>Username (No spaces)</label>
-            <input type="text" id="regUser" placeholder="e.g. johndoe123">
-        </div>
-        <button class="btn btn-primary" onclick="register()">Create Account</button>
-        <div class="auth-switch">
-            Already have an account? <a onclick="showPage('loginPage')">Sign In</a>
-        </div>
+        <h2>Join BioLink</h2>
+        <div class="form-group"><label>Username (no spaces)</label><input type="text" id="regUser"></div>
+        <div class="form-group"><label>Password</label><input type="password" id="regPass"></div>
+        <button class="btn btn-primary" onclick="register()">Sign Up</button>
+        <div class="auth-switch">Have an account? <span onclick="showPage('loginPage')">Sign In</span></div>
     </section>
 
-    <!-- DASHBOARD (EDIT) -->
+    <!-- DASHBOARD -->
     <section id="dashboardPage" class="hidden">
-        <div style="display:flex; justify-content:space-between; align-items:center;">
-            <h2>Edit Profile</h2>
-            <button class="btn btn-primary" style="width:auto; padding: 5px 15px; font-size:0.8rem;" onclick="saveData()">Save Changes</button>
-        </div>
-        
-        <div class="form-group">
-            <label>Display Name</label>
-            <input type="text" id="editName">
-        </div>
-        <div class="form-group">
-            <label>Bio / Role</label>
-            <input type="text" id="editBio">
-        </div>
-        
-        <div class="form-group">
-            <label>Links (One per line: Title | URL)</label>
-            <textarea id="editLinks" rows="6" style="width:100%; padding:12px; border:1px solid #d1d5db; border-radius:8px; font-family:inherit;"></textarea>
-            <small>Format: My Site | https://google.com</small>
+        <div class="stats-bar">
+            <div class="stat-box"><span class="stat-num" id="dashViews">0</span><span class="stat-label">Views</span></div>
+            <div class="stat-box"><span class="stat-num" id="dashFollowers">0</span><span class="stat-label">Followers</span></div>
+            <div class="stat-box"><span class="stat-num" id="dashFollowing">0</span><span class="stat-label">Following</span></div>
         </div>
 
-        <div class="share-box">
-            <p>Your public profile link:</p>
-            <div class="share-url" id="shareLinkDisplay">...</div>
-            <button class="btn btn-secondary" style="margin-top:10px;" onclick="copyLink()">Copy Link</button>
+        <div class="dash-tabs">
+            <div class="dash-tab active" onclick="switchDashTab('edit')">Edit Profile</div>
+            <div class="dash-tab" onclick="switchDashTab('share')">QR & Share</div>
+        </div>
+
+        <!-- Edit Tab -->
+        <div id="tab-edit">
+            <div class="form-group">
+                <label>Display Name</label>
+                <input type="text" id="editName">
+            </div>
+            <div class="form-group">
+                <label>Bio</label>
+                <textarea id="editBio" rows="2"></textarea>
+            </div>
+            <div class="form-group">
+                <label>Theme</label>
+                <select id="editTheme">
+                    <option value="light">Light (Default)</option>
+                    <option value="dark">Dark Mode</option>
+                    <option value="neon">Neon</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label>Links (Title | URL)</label>
+                <textarea id="editLinks" rows="5" placeholder="Instagram | https://..."></textarea>
+            </div>
+            <button class="btn btn-primary" onclick="saveProfile()">Save Changes</button>
+        </div>
+
+        <!-- Share Tab -->
+        <div id="tab-share" class="hidden">
+            <div class="qr-container">
+                <img id="qrImage" class="qr-img" src="" alt="QR Code">
+                <p style="margin-top:10px; font-size:0.9rem;">Scan to visit profile</p>
+            </div>
+            <div class="form-group">
+                <label>Your Profile Link</label>
+                <input type="text" id="shareLink" readonly style="background:#f9fafb; color:#6b7280;">
+            </div>
+            <button class="btn btn-outline" onclick="copyLink()">Copy Link</button>
         </div>
     </section>
 
-    <!-- PUBLIC PROFILE VIEW -->
+    <!-- VIEW PROFILE -->
     <section id="viewPage" class="hidden">
         <div class="profile-header">
-            <img src="" id="viewAvatar" class="avatar" alt="Profile">
-            <h2 id="viewName">User Name</h2>
-            <p id="viewBio" class="role">Bio Here</p>
+            <img src="" id="viewAvatar" class="avatar">
+            <h2 class="username-display" id="viewName">Username</h2>
+            <p id="viewBio" style="opacity:0.8;">Bio</p>
         </div>
-        <div id="viewLinks" class="links-container">
-            <!-- Links go here -->
+
+        <div class="meta-row">
+            <span style="font-size:0.9rem;"><span id="viewFollowers">0</span> Followers</span>
+            <button id="btnFollow" class="follow-btn" onclick="toggleFollow()">Follow</button>
         </div>
-        <div style="text-align:center; margin-top:40px;">
-            <button class="btn btn-secondary" style="width:auto;" onclick="goHome()">Create your own BioLink</button>
+
+        <div id="viewLinks" class="links-container"></div>
+        
+        <div style="text-align:center; margin-top:30px;">
+            <button class="btn btn-outline" style="width:auto;" onclick="goHome()">Back to Home</button>
         </div>
     </section>
 </div>
 
 <script>
-    // --- CONFIGURATION ---
+    // --- CONFIG ---
     const API_KEY = '$2a$10$6pUdy/J1bsEd/TyKP1OTF.KLdk5T/Y0N4AxU6xn00i5HQsDK5J0zy';
     const BIN_ID = '695176dfae596e708fb64a3b';
     const DB_URL = `https://api.jsonbin.io/v3/b/${BIN_ID}`;
-    // ---------------------
-
-    // State
+    
     let currentUser = localStorage.getItem('biolink_user');
+    let viewingUser = null; // Who are we looking at?
 
-    // --- INIT ---
-    window.onload = function() {
-        const params = new URLSearchParams(window.location.search);
-        const sharedUser = params.get('user');
-
-        if(sharedUser) {
-            loadPublicProfile(sharedUser);
-        } else if (currentUser) {
-            loadDashboard();
-        } else {
-            showPage('loginPage');
-        }
-        updateNav();
-    };
-
-    // --- DATABASE HELPERS ---
+    // --- DB HELPERS ---
     async function getDB() {
         const res = await fetch(DB_URL, { headers: { 'X-Master-Key': API_KEY } });
         const data = await res.json();
@@ -189,77 +210,45 @@
         });
     }
 
-    // --- NAVIGATION ---
-    function showPage(pageId) {
-        document.querySelectorAll('section').forEach(sec => sec.classList.add('hidden'));
-        document.getElementById(pageId).classList.remove('hidden');
-        updateNav();
-    }
-
-    function goHome() {
-        // Remove ?user from URL to go to home
-        window.history.pushState({}, document.title, window.location.pathname);
-        if(currentUser) showPage('dashboardPage');
-        else showPage('loginPage');
-    }
-
-    function updateNav() {
-        const nav = document.getElementById('navAuth');
-        nav.innerHTML = '';
-        
-        if (currentUser) {
-            const btn = document.createElement('button');
-            btn.innerText = 'Logout';
-            btn.className = 'logout';
-            btn.onclick = logout;
-            nav.appendChild(btn);
-        }
-    }
-
-    // --- AUTHENTICATION ---
+    // --- AUTH ---
     async function register() {
-        let user = document.getElementById('regUser').value.trim().toLowerCase();
-        
-        // Validation
-        if (!user) return showToast("Username is required");
-        if (user.includes(" ")) return showToast("Username cannot contain spaces");
-        if (!/^[a-z0-9_]+$/.test(user)) return showToast("Only letters, numbers, and underscores allowed");
+        const u = document.getElementById('regUser').value.trim().toLowerCase();
+        const p = document.getElementById('regPass').value;
+
+        if(!u || !p) return alert("Fill all fields");
+        if(u.includes(" ")) return alert("No spaces in username");
 
         const db = await getDB();
-        
-        if (db[user]) {
-            return showToast("Username already taken!");
-        }
+        if(db[u]) return alert("Username taken");
 
-        // Create User
-        db[user] = {
-            name: user,
-            bio: "New User",
-            links: []
+        db[u] = {
+            password: p, // In production, hash this!
+            name: u,
+            bio: "New here!",
+            theme: "light",
+            links: [],
+            followers: [],
+            following: [],
+            views: 0
         };
-        
+
         await updateDB(db);
-        
-        // Auto login
-        localStorage.setItem('biolink_user', user);
-        currentUser = user;
-        showToast("Account created!");
+        localStorage.setItem('biolink_user', u);
+        currentUser = u;
         loadDashboard();
     }
 
     async function login() {
-        let user = document.getElementById('loginUser').value.trim().toLowerCase();
-        if (!user) return showToast("Enter a username");
+        const u = document.getElementById('loginUser').value.trim().toLowerCase();
+        const p = document.getElementById('loginPass').value;
 
         const db = await getDB();
-        
-        if (db[user]) {
-            localStorage.setItem('biolink_user', user);
-            currentUser = user;
-            showToast("Logged in");
+        if(db[u] && db[u].password === p) {
+            localStorage.setItem('biolink_user', u);
+            currentUser = u;
             loadDashboard();
         } else {
-            showToast("User not found. Please Sign Up.");
+            alert("Invalid credentials");
         }
     }
 
@@ -269,87 +258,202 @@
         goHome();
     }
 
-    // --- DASHBOARD LOGIC ---
+    // --- NAVIGATION ---
+    window.onload = function() {
+        const params = new URLSearchParams(window.location.search);
+        const userParam = params.get('user');
+
+        if(userParam) {
+            loadPublicProfile(userParam);
+        } else if(currentUser) {
+            loadDashboard();
+        } else {
+            showPage('loginPage');
+        }
+        updateNav();
+    };
+
+    function showPage(pageId) {
+        document.querySelectorAll('section').forEach(s => s.classList.add('hidden'));
+        document.getElementById(pageId).classList.remove('hidden');
+        if(pageId !== 'viewPage') document.body.className = ''; // Reset theme when not viewing profile
+    }
+
+    function goHome() {
+        window.history.pushState({}, "", window.location.pathname);
+        if(currentUser) loadDashboard();
+        else showPage('loginPage');
+    }
+
+    function updateNav() {
+        if(currentUser) document.getElementById('navLogout').classList.remove('hidden');
+        else document.getElementById('navLogout').classList.add('hidden');
+    }
+
+    // --- DASHBOARD ---
     async function loadDashboard() {
-        if(!currentUser) return;
         showPage('dashboardPage');
-        
         const db = await getDB();
         const data = db[currentUser];
 
-        // Populate Inputs
-        document.getElementById('editName').value = data.name || "";
-        document.getElementById('editBio').value = data.bio || "";
+        // Fill Stats
+        document.getElementById('dashViews').innerText = data.views || 0;
+        document.getElementById('dashFollowers').innerText = (data.followers || []).length;
+        document.getElementById('dashFollowing').innerText = (data.following || []).length;
+
+        // Fill Form
+        document.getElementById('editName').value = data.name;
+        document.getElementById('editBio').value = data.bio;
+        document.getElementById('editTheme').value = data.theme || 'light';
         
-        // Format links back to text area
-        const linkText = (data.links || []).map(l => `${l.title} | ${l.url}`).join('\n');
-        document.getElementById('editLinks').value = linkText;
+        const linksTxt = (data.links || []).map(l => `${l.title} | ${l.url}`).join('\n');
+        document.getElementById('editLinks').value = linksTxt;
 
-        // Generate Share Link
-        const fullUrl = `${window.location.origin}${window.location.pathname}?user=${currentUser}`;
-        document.getElementById('shareLinkDisplay').innerText = fullUrl;
+        // Generate QR & Link
+        const baseUrl = `${window.location.origin}${window.location.pathname}?user=${currentUser}`;
+        document.getElementById('shareLink').value = baseUrl;
+        document.getElementById('qrImage').src = `https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=${encodeURIComponent(baseUrl)}`;
     }
 
-    async function saveData() {
-        const name = document.getElementById('editName').value.trim();
-        const bio = document.getElementById('editBio').value.trim();
-        const linksRaw = document.getElementById('editLinks').value.trim();
-
-        // Parse Links
-        const links = linksRaw.split('\n')
-            .filter(line => line.includes('|'))
-            .map(line => {
-                const parts = line.split('|');
-                return { title: parts[0].trim(), url: parts[1].trim() };
-            });
-
-        // Update DB
-        const db = await getDB();
-        db[currentUser] = { ...db[currentUser], name, bio, links };
+    function switchDashTab(tab) {
+        document.querySelectorAll('.dash-tab').forEach(t => t.classList.remove('active'));
+        event.target.classList.add('active');
         
-        await updateDB(db);
-        showToast("Profile Saved!");
-    }
-
-    function copyLink() {
-        const text = document.getElementById('shareLinkDisplay').innerText;
-        navigator.clipboard.writeText(text);
-        showToast("Link copied to clipboard!");
-    }
-
-    // --- PUBLIC VIEW LOGIC ---
-    async function loadPublicProfile(username) {
-        showPage('viewPage');
-        const db = await getDB();
-        const user = db[username];
-
-        if(user) {
-            document.getElementById('viewName').innerText = user.name;
-            document.getElementById('viewBio').innerText = user.bio;
-            // Consistent random avatar based on username
-            document.getElementById('viewAvatar').src = `https://picsum.photos/seed/${username}/200/200`;
-            
-            const container = document.getElementById('viewLinks');
-            container.innerHTML = '';
-            
-            if(user.links) {
-                user.links.forEach(link => {
-                    const a = document.createElement('a');
-                    a.href = link.url;
-                    a.className = 'link-card';
-                    a.target = "_blank";
-                    a.innerHTML = `<span>${link.title}</span> <span>➝</span>`;
-                    container.appendChild(a);
-                });
-            }
+        if(tab === 'edit') {
+            document.getElementById('tab-edit').classList.remove('hidden');
+            document.getElementById('tab-share').classList.add('hidden');
         } else {
-            document.getElementById('viewName').innerText = "User Not Found";
-            document.getElementById('viewBio').innerText = "";
-            document.getElementById('viewLinks').innerHTML = "";
+            document.getElementById('tab-edit').classList.add('hidden');
+            document.getElementById('tab-share').classList.remove('hidden');
         }
     }
 
-    // --- UTILS ---
+    async function saveProfile() {
+        const db = await getDB();
+        const me = db[currentUser];
+
+        const name = document.getElementById('editName').value;
+        const bio = document.getElementById('editBio').value;
+        const theme = document.getElementById('editTheme').value;
+        const linksRaw = document.getElementById('editLinks').value;
+
+        const links = linksRaw.split('\n').filter(l => l.includes('|')).map(l => {
+            const parts = l.split('|');
+            return { title: parts[0].trim(), url: parts[1].trim() };
+        });
+
+        me.name = name;
+        me.bio = bio;
+        me.theme = theme;
+        me.links = links;
+
+        db[currentUser] = me;
+        await updateDB(db);
+        showToast("Saved!");
+    }
+
+    function copyLink() {
+        const copyText = document.getElementById("shareLink");
+        copyText.select();
+        navigator.clipboard.writeText(copyText.value);
+        showToast("Link copied");
+    }
+
+    // --- PUBLIC PROFILE & INTERACTION ---
+    async function loadPublicProfile(username) {
+        viewingUser = username;
+        showPage('viewPage');
+        
+        const db = await getDB();
+        const user = db[username];
+
+        if(!user) {
+            document.getElementById('viewName').innerText = "User Not Found";
+            return;
+        }
+
+        // Update Views (Async)
+        user.views = (user.views || 0) + 1;
+        db[username] = user;
+        updateDB(db); // Fire and forget to speed up UI
+
+        // Render Data
+        document.getElementById('viewName').innerText = user.name;
+        document.getElementById('viewBio').innerText = user.bio;
+        document.getElementById('viewFollowers').innerText = (user.followers || []).length;
+        document.getElementById('viewAvatar').src = `https://picsum.photos/seed/${username}/200/200`;
+
+        // Apply Theme
+        document.body.className = `theme-${user.theme || 'light'}`;
+
+        // Render Links
+        const container = document.getElementById('viewLinks');
+        container.innerHTML = '';
+        (user.links || []).forEach(link => {
+            const a = document.createElement('a');
+            a.href = link.url;
+            a.className = 'link-card';
+            a.innerText = link.title;
+            a.target = "_blank";
+            container.appendChild(a);
+        });
+
+        // Handle Follow Button
+        updateFollowButton(db, user);
+    }
+
+    async function toggleFollow() {
+        if(!currentUser) return alert("Login to follow");
+        if(currentUser === viewingUser) return alert("You cannot follow yourself");
+
+        const db = await getDB();
+        const me = db[currentUser];
+        const them = db[viewingUser];
+
+        // Toggle Logic
+        const isFollowing = (me.following || []).includes(viewingUser);
+
+        if(isFollowing) {
+            // Unfollow
+            me.following = me.following.filter(u => u !== viewingUser);
+            them.followers = them.followers.filter(u => u !== currentUser);
+        } else {
+            // Follow
+            me.following = [...(me.following || []), viewingUser];
+            them.followers = [...(them.followers || []), currentUser];
+        }
+
+        // Save
+        db[currentUser] = me;
+        db[viewingUser] = them;
+        await updateDB(db);
+
+        // Update UI
+        document.getElementById('viewFollowers').innerText = them.followers.length;
+        updateFollowButton(db, them);
+    }
+
+    function updateFollowButton(db, profile) {
+        const btn = document.getElementById('btnFollow');
+        if(!currentUser || currentUser === viewingUser) {
+            btn.style.display = 'none';
+            return;
+        }
+        btn.style.display = 'block';
+        
+        // Re-fetch to be safe or just check local memory (simplified here)
+        // We assume state is consistent for the UI update immediately
+        const isFollowing = (db[currentUser].following || []).includes(viewingUser);
+        
+        if(isFollowing) {
+            btn.innerText = "Following";
+            btn.classList.add("following");
+        } else {
+            btn.innerText = "Follow";
+            btn.classList.remove("following");
+        }
+    }
+
     function showToast(msg) {
         const t = document.getElementById('toast');
         t.innerText = msg;
@@ -359,4 +463,4 @@
 </script>
 
 </body>
-    </html>
+                </html>
